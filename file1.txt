@@ -4,3 +4,5 @@ to test git merge conflict
 Hello world
 we are testing git merge conflict in feature branch 
 am at feature branch  
+Mandya is a nice place
+Bangalore is a working place

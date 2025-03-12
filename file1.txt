@@ -1,1 +1,50 @@
-Hello world 
+provider "aws" {
+  region = "ap-south-1"  # AWS Mumbai Region
+}
+
+# Variables for AWS Service Catalog Product
+variable "servicecatalog_product_id" {
+  default = "prod-xxxxxxxxxxxxxxxxx"  # Replace with actual Product ID
+}
+
+variable "servicecatalog_portfolio_id" {
+  default = "port-xxxxxxxxxxxxxxxxx"  # Replace with actual Portfolio ID
+}
+
+variable "servicecatalog_artifact_id" {
+  default = "pa-xxxxxxxxxxxxxxxxx"  # Replace with actual Artifact ID
+}
+
+# Provision the VPC using AWS Service Catalog
+resource "aws_servicecatalog_provisioned_product" "vpc" {
+  name                     = "ServiceCatalog-VPC"
+  product_id               = var.servicecatalog_product_id
+  provisioning_artifact_id = var.servicecatalog_artifact_id
+  provisioned_product_name = "ServiceCatalog-VPC-Instance"
+
+  # Pass parameters required by the Service Catalog product
+  provisioning_parameters {
+    key   = "VPCCidrBlock"
+    value = "10.0.0.0/16"
+  }
+
+  provisioning_parameters {
+    key   = "EnableDNSHostnames"
+    value = "true"
+  }
+
+  provisioning_parameters {
+    key   = "EnableDNSSupport"
+    value = "true"
+  }
+
+  tags = {
+    Environment = "Dev"
+  }
+}
+
+# Output the VPC ID
+output "vpc_id" {
+  value       = aws_servicecatalog_provisioned_product.vpc.id
+  description = "VPC ID created using Service Catalog"
+}

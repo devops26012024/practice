@@ -1,0 +1,30 @@
+provider "aws" {
+  region = "ap-south-1"  # Change to your region
+}
+
+# 🔹 Fetch the existing VPC created via AWS Service Catalog
+data "aws_vpc" "existing_vpc" {
+  filter {
+    name   = "tag:Name"
+    values = ["MyServiceCatalogVPC"]  # Replace with your actual VPC Name
+  }
+}
+
+# 🔹 Fetch an existing subnet in the VPC
+data "aws_subnet" "existing_subnet" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.existing_vpc.id]
+  }
+}
+
+# 🔹 Launch an EC2 instance inside the existing VPC
+resource "aws_instance" "my_ec2" {
+  ami             = "ami-0c55b159cbfafe1f0"  # Replace with a valid AMI ID
+  instance_type   = "t2.micro"
+  subnet_id       = data.aws_subnet.existing_subnet.id  # Use the existing subnet
+
+  tags = {
+    Name = "MyEC2Instance"
+  }
+}
